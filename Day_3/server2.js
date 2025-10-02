@@ -17,8 +17,13 @@ wss.on('connection', (ws) => {
   // Event ketika server menerima pesan dari client
   ws.on('message', (message) => {
     console.log(`[${getTimestamp()}] Pesan dari client: ${message}`);
-    // Balas pesan ke client
-    ws.send(`[${getTimestamp()}] Server menerima: ${message}`);
+
+    // Broadcast ke semua client yang terhubung
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(`[${getTimestamp()}] ${message}`);
+      }
+    });
   });
 
   // Event ketika koneksi client ditutup
